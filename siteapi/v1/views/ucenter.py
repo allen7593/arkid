@@ -373,6 +373,16 @@ class RevokeTokenView(APIView):
         '''
         user = request.user
         user.revoke_token()
+
+        '''
+        Remove all oauth token when user logout
+        '''
+        from oauth2_provider.models import RefreshToken as OAuthRefreshToken
+
+        user_refresh_tokens = OAuthRefreshToken.objects.filter(user=user).all()
+
+        for refresh_token in user_refresh_tokens:
+            refresh_token.revoke()
         return Response()
 
 
